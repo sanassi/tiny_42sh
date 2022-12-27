@@ -104,7 +104,10 @@ bool hash_map_insert(struct hash_map *hash_map, const char *key, char *value,
 
 int hm_get_int(const struct hash_map *h, const char *key)
 {
-    return atoi(hash_map_get(h, key));
+    const char *res = hash_map_get(h, key);
+    if (res == NULL)
+        return -1;
+    return atoi(res);
 }
 
 const char *hash_map_get(const struct hash_map *hash_map, const char *key)
