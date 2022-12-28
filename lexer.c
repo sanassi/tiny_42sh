@@ -46,6 +46,8 @@ bool is_alpha(char c)
         return true;
     if (c >= 'a' && c <= 'z')
         return true;
+    if (c == '-')
+        return true;
     return false;
 }
 
@@ -175,7 +177,7 @@ void word(struct lexer *l)
         lexer_advance(l);
 
     char *text = get_substr(l -> src, l -> start, l ->current);
-    enum TOK_TYPE type = hm_get_int(l->keywords, text);
+    int type = hm_get_int(l->keywords, text); // do not use enum TOK_TYPE
     if (type < 0)
         type = WORD;
     lexer_add_token_2(l, type);
@@ -243,6 +245,8 @@ void lexer_scan_tokens(struct lexer *l)
     case ';':
         if (lexer_match(l, ';'))
             lexer_add_token_2(l, DSEMI);
+        else
+            lexer_add_token_2(l, SCOLON);
         break;
     case '<':
         if (lexer_match(l, '<'))
@@ -251,8 +255,11 @@ void lexer_scan_tokens(struct lexer *l)
                 lexer_add_token_2(l, DLESSDASH);
             else
                 lexer_add_token_2(l, DLESS);
+            break;
         }
-        if (lexer_match(l, '&'))
+        else if (lexer_match(l, '>'))
+            lexer_add_token_2(l, LESSGREAT);
+        else if (lexer_match(l, '&'))
             lexer_add_token_2(l, LESSAND);
         break;
     case '>':
@@ -263,32 +270,25 @@ void lexer_scan_tokens(struct lexer *l)
         break;
     default:
         if (is_alpha(c))
-        {
             word(l);
-        }
         else if (is_quoting_char(c))
-        {
             quote(l, c);
-        }
         else if (c == ' ')
-        {
             blank(l);
-        }
         else if (c == '#')
-        {
             comment(l);
-        }
         else 
-        {
             errx(1, "lexer : unexpected token");
-        }
     }
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
+    if (argc != 2)
+        return 1;
+
     struct lexer *l = calloc(1, sizeof(struct lexer));
-    l -> src = "echo truc | nc localhost";
+    l -> src = argv[1];
     l -> src_len = strlen(l->src);
     l ->keywords = init_reserved_words();
 
@@ -301,7 +301,8 @@ int main(void)
     struct token_list *tmp = l -> t_list;
     while (tmp)
     {
-        printf(".%s.\n", tmp -> t ->lexeme);
+        if (tmp -> t -> type < NB_TOKENS)
+            printf("%s [%s]\n",token_str[tmp -> t ->type], tmp->t->lexeme);
         tmp = tmp -> next;
     }
     return 0;

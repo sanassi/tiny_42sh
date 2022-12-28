@@ -64,17 +64,20 @@ enum TOK_TYPE
     WORD,
     STRING,
 
-    PIPE, AND, OR,
+    PIPE, AND,
 
     NAME, ASSIGNMENT_WORD
 };
 
-#define NB_TOKENS 29
-char token_str[NB_TOKENS][10] =
+#define NB_TOKENS 36
+char token_str[NB_TOKENS][20] =
 {
-    "~", "#", "$", "&", "*", "(", ")", "\\", "|", "{", "}", "[", "]",
-    ";", "'", "\"", ">", "<", "/\\", "?", "!", ">>", "<<", ">&", "<&",
-    ">|", "<>", "word", " "
+    "&&", "||", ";;", "<<", ">>", "<&",
+    ">&", "<>", "<<-", "|>",
+    "if", "then", "else", "elif", "fi", "do", "done",
+    "case", "esac", "while", "until", "for",
+    "{", "}", "!", "in", "<", ">", ";", "\n",
+    "WORD", "STRING", "|", "&", "NAME", "ASSIGNMENT_WORD",
 };
 
 struct token
