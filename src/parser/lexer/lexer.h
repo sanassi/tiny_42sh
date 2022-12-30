@@ -118,6 +118,12 @@ char lexer_peek(struct lexer *p);
 
 void lexer_scan_tokens(struct lexer *p);
 
+void free_token(struct token *t);
+
+void free_token_list(struct token_list *t_list);
+
+void lexer_free(struct lexer *l);
+
 //void lexer_add_token(struct lexer *p, struct token *t);
 
 #endif
