@@ -66,10 +66,12 @@ enum TOK_TYPE
 
     PIPE, AND,
 
-    NAME, ASSIGNMENT_WORD
+    NAME, ASSIGNMENT_WORD,
+
+    LPAR, RPAR
 };
 
-#define NB_TOKENS 36
+#define NB_TOKENS 38
 char token_str[NB_TOKENS][20] =
 {
     "&&", "||", ";;", "<<", ">>", "<&",
@@ -78,6 +80,7 @@ char token_str[NB_TOKENS][20] =
     "case", "esac", "while", "until", "for",
     "{", "}", "!", "in", "<", ">", ";", "\n",
     "WORD", "STRING", "|", "&", "NAME", "ASSIGNMENT_WORD",
+    "(", ")"
 };
 
 struct token

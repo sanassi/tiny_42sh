@@ -170,6 +170,18 @@ void lexer_add_token(struct lexer *l, enum TOK_TYPE type, void *literal)
    token_list_append(&(l->t_list), t);
 }
 
+struct token *get_last_token(struct token_list *t_list)
+{
+    if (!t_list)
+        return NULL;
+
+    struct token_list *end = t_list;
+
+    while (end -> next)
+        end = end -> next;
+    return end -> t;
+}
+
 void lexer_add_token_2(struct lexer *l, enum TOK_TYPE type)
 {
     lexer_add_token(l, type, NULL);
@@ -257,6 +269,12 @@ void lexer_scan_tokens(struct lexer *l)
     case '{':
         lexer_add_token_2(l, RBRACE);
         break;
+    case '(':
+        lexer_add_token_2(l, LPAR);
+        break;
+    case ')':
+        lexer_add_token_2(l, RPAR);
+        break;
     case '!':
         lexer_add_token_2(l, BANG);
         break;
@@ -298,6 +316,9 @@ void lexer_scan_tokens(struct lexer *l)
         if (lexer_match(l, '&'))
             lexer_add_token_2(l, GREATAND);
         break;
+    case '\n':
+        lexer_add_token_2(l, NEWLINE);
+        break;
     default:
         if (is_alpha(c))
             word(l);
@@ -312,7 +333,11 @@ void lexer_scan_tokens(struct lexer *l)
     }
 }
 
-
+struct token *lexer_get_next_token(struct lexer* lexer)
+{
+    (void) lexer;
+    return NULL;
+}
 
 int main(int argc, char *argv[])
 {
