@@ -134,6 +134,7 @@ bool lexer_match(struct lexer *l, char expected)
     return true;
 }
 
+/*token list functions*/
 void token_list_append(struct token_list **t_list, struct token *tok)
 {
     if (!tok)
@@ -157,6 +158,26 @@ void token_list_append(struct token_list **t_list, struct token *tok)
     tmp -> next ->t = tok;
 }
 
+struct token *token_list_get_at(struct token_list *t_list, size_t index)
+{
+    if (!t_list)
+        errx(1, "Error - token_list_get_at : list is NULL");
+
+    struct token_list *tmp = t_list;
+
+    while (tmp && index > 0)
+    {
+        index -= 1;
+        tmp = tmp -> next;
+    }
+
+    if (!tmp)
+        errx(1, "Error - token_list_get_at : index out of range");
+
+    return tmp->t;
+}
+
+/*------------------*/
 void lexer_add_token(struct lexer *l, enum TOK_TYPE type, void *literal)
 {
    char *text = get_substr(l ->src, l->start, l->current);
@@ -232,7 +253,7 @@ void quote(struct lexer *l, const char quote_char)
 
     char end = lexer_advance(l);
     if (end != quote_char)
-        errx(1, "lexer: unexpected character: %c", end);
+        errx(1, "Error - lexer: unexpected character: %c", end);
 
     char *text = get_substr(l->src, l->start + 1, l -> current - 1);
     lexer_add_token(l, STRING, text);
@@ -333,21 +354,73 @@ void lexer_scan_tokens(struct lexer *l)
     }
 }
 
+/*function a little weird*/
+
+/*pb : i want the parser to be able to request tokens to the lexer
+ * but I  also want to write a peek() function for the parser, but
+ * the upcoming token won't exist yet.
+ * tried to do :
+ *      when parser_advance is called : lex more than one token at a time.
+ */
+
 struct token *lexer_get_next_token(struct lexer* lexer)
 {
-    (void) lexer;
-    return NULL;
+    if (lexer_is_at_end(lexer))
+    {
+        struct token *t = calloc(1, sizeof(struct token));
+        t -> type = END;
+        return t;
+    }
+
+    lexer -> nb_tokens += 1;
+    lexer -> start = lexer -> current;
+
+    lexer_scan_tokens(lexer);
+    return get_last_token(lexer -> t_list);
 }
+
+struct lexer *lexer_init(char *input)
+{
+    struct lexer *l = calloc(1, sizeof(struct lexer));
+    l -> src = input;
+    l -> src_len = strlen(l->src);
+    l ->keywords = init_reserved_words();
+
+    return l;
+}
+
+void lexer_lex(struct lexer *l)
+{
+    while (!lexer_is_at_end(l))
+    {
+        l -> start = l -> current;
+        lexer_scan_tokens(l);
+    }
+
+    lexer_add_token_2(l, END);
+}
+
+#define HEHE
+#ifndef HEHE
+
+#define NB_TOKENS 38
+char token_str[NB_TOKENS][20] =
+{
+    "&&", "||", ";;", "<<", ">>", "<&",
+    ">&", "<>", "<<-", "|>",
+    "if", "then", "else", "elif", "fi", "do", "done",
+    "case", "esac", "while", "until", "for",
+    "{", "}", "!", "in", "<", ">", ";", "\n",
+    "WORD", "STRING", "|", "&", "NAME", "ASSIGNMENT_WORD",
+    "(", ")"
+};
 
 int main(int argc, char *argv[])
 {
     if (argc != 2)
         return 1;
 
-    struct lexer *l = calloc(1, sizeof(struct lexer));
-    l -> src = argv[1];
-    l -> src_len = strlen(l->src);
-    l ->keywords = init_reserved_words();
+    struct lexer *l = lexer_init(argv[1]);
 
     while (!lexer_is_at_end(l))
     {
@@ -366,3 +439,5 @@ int main(int argc, char *argv[])
     lexer_free(l);
     return 0;
 }
+
+#endif

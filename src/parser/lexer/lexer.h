@@ -68,9 +68,13 @@ enum TOK_TYPE
 
     NAME, ASSIGNMENT_WORD,
 
-    LPAR, RPAR
+    LPAR, RPAR,
+
+    /*end of input*/
+    END
 };
 
+/*
 #define NB_TOKENS 38
 char token_str[NB_TOKENS][20] =
 {
@@ -82,6 +86,7 @@ char token_str[NB_TOKENS][20] =
     "WORD", "STRING", "|", "&", "NAME", "ASSIGNMENT_WORD",
     "(", ")"
 };
+*/
 
 struct token
 {
@@ -127,6 +132,13 @@ void free_token_list(struct token_list *t_list);
 
 void lexer_free(struct lexer *l);
 
+struct token *token_list_get_at(struct token_list *t_list, size_t index);
+
+struct token *lexer_get_next_token(struct lexer* lexer);
+
+struct lexer *lexer_init(char *input);
+
+void lexer_lex(struct lexer *l);
 //void lexer_add_token(struct lexer *p, struct token *t);
 
 #endif
