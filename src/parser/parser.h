@@ -26,6 +26,25 @@ struct parser
     enum parser_status status;
 };
 
+enum ast_node_type
+{
+    AST_NODE_IF,
+    AST_NODE_SIMPLE_CMD,
+};
 
+struct ast_node
+{
+    enum ast_node_type type;
+
+    struct ast_node **children;
+};
+
+struct ast_node_simple_cmd
+{
+    struct ast_node base;
+
+    char *cmd_name;
+    char **cmd_args;
+};
 
 #endif

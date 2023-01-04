@@ -401,7 +401,7 @@ void lexer_lex(struct lexer *l)
 }
 
 #define HEHE
-#ifndef HEHE
+#ifdef HEHE
 
 #define NB_TOKENS 38
 char token_str[NB_TOKENS][20] =
@@ -410,7 +410,7 @@ char token_str[NB_TOKENS][20] =
     ">&", "<>", "<<-", "|>",
     "if", "then", "else", "elif", "fi", "do", "done",
     "case", "esac", "while", "until", "for",
-    "{", "}", "!", "in", "<", ">", ";", "\n",
+    "{", "}", "!", "in", "<", ">", ";", "NEWLINE",
     "WORD", "STRING", "|", "&", "NAME", "ASSIGNMENT_WORD",
     "(", ")"
 };
